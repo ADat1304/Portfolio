@@ -7,11 +7,15 @@ import TimelineSection from './components/TimelineSection.vue';
 import SkillsEducationSection from './components/SkillsEducationSection.vue';
 import ProjectsSection from './components/ProjectsSection.vue';
 import ContactSection from './components/ContactSection.vue';
+import ThreeExperience from './components/ThreeExperience.vue';
+import AboutDeki from './components/AboutDeki.vue';
+import ContactDeki from './components/ContactDeki.vue';
 
 let lenis: Lenis | null = null;
 let rafId: number | null = null;
 
 onMounted(() => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   // Initialize Lenis smooth scroll
   try {
     lenis = new Lenis({
@@ -43,11 +47,13 @@ onUnmounted(() => {
   <div class="relative min-h-screen bg-[#08090d] text-[#e2e4ed] selection:bg-indigo-500/30 selection:text-indigo-200">
     <!-- Navbar Header -->
     <Navbar />
+    <ThreeExperience />
 
     <!-- Main Narrative Sections -->
     <main>
       <!-- Scene 1: Hero Workstation Studio -->
       <HeroSection />
+      <AboutDeki />
 
       <!-- Scene 2: The 3 Lifelines / Standing Up (Hà Tĩnh - Cấp 3 - Hiện Tại) -->
       <TimelineSection />
@@ -59,6 +65,7 @@ onUnmounted(() => {
       <ProjectsSection />
 
       <!-- Scene 5: Contact, Social, CV Download & Direct Message Form -->
+      <ContactDeki />
       <ContactSection />
     </main>
   </div>

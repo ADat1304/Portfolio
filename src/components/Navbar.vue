@@ -19,6 +19,7 @@ const handleScroll = () => {
 
 const navItems = [
   { name: 'Khởi đầu', href: '#hero' },
+  { name: 'Gặp Deki', href: '#about' },
   { name: '3 Mốc thời gian', href: '#timeline' },
   { name: 'Học vấn & Kỹ năng', href: '#skills' },
   { name: 'Dự án', href: '#projects' },
@@ -31,7 +32,7 @@ const scrollToSection = (e: MouseEvent, href: string) => {
   mobileMenuOpen.value = false;
   const target = document.querySelector(href);
   if (target) {
-    target.scrollIntoView({ behavior: 'smooth' });
+    target.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
   }
 };
 

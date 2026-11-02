@@ -1,0 +1,23 @@
+[
+  {
+    "source": "clay_workspace_deki.blend",
+    "output": "workspace.glb",
+    "bytes": 2044940,
+    "groups": [
+      "room",
+      "plant",
+      "monitor",
+      "deki"
+    ],
+    "vertices": 283828
+  },
+  {
+    "source": "DekiModel_crown_filled_hair_ok.blend",
+    "output": "deki.glb",
+    "bytes": 591360,
+    "groups": [
+      "deki"
+    ],
+    "vertices": 129976
+  }
+]

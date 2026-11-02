@@ -1,5 +1,11 @@
-# Vue 3 + TypeScript + Vite
+# Deki Portfolio — Vue 3 + Three.js
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Portfolio với góc làm việc 3D, Deki hologram/clay và cảnh liên hệ, sử dụng hai model Blender trong thư mục cha.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+```powershell
+npm.cmd install
+npm.cmd run dev
+npm.cmd run build
+```
+
+Xem [THREE-NOTES.md](THREE-NOTES.md) để đọc phân tích dự án tham chiếu, cấu trúc 3D, cách xuất lại model và các giới hạn hiện tại.
