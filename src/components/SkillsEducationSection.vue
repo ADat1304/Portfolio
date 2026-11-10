@@ -4,6 +4,7 @@ import {
   Cpu, Code2, Database, Wrench 
 } from 'lucide-vue-next';
 import { sound } from '../utils/sound';
+import SlantedBanner from './SlantedBanner.vue';
 
 const skillCategories = [
   {
@@ -77,23 +78,21 @@ const certifications = [
 </script>
 
 <template>
-  <section id="skills" class="py-24 relative bg-[#08090d]">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <section id="skills" class="py-24 relative bg-[#242733]">
+    <div class="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8">
       
       <!-- Section Title -->
-      <div class="text-center max-w-3xl mx-auto space-y-4 mb-16">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono">
-          <GraduationCap class="w-3.5 h-3.5" />
-          <span>Nền tảng học thuật & Năng lực thực chiến</span>
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-14 pb-6 border-b border-white/5">
+        <div class="space-y-2">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono">
+            <GraduationCap class="w-3.5 h-3.5" />
+            <span>Nền tảng học thuật & Năng lực thực chiến</span>
+          </div>
+          <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
+            Học Vấn, <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">Kỹ Năng</span> & Chứng Chỉ
+          </h2>
         </div>
-
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
-          Học Vấn, <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">Kỹ Năng</span> & Chứng Chỉ
-        </h2>
-
-        <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
-          Sự kết hợp giữa tư duy nền tảng vững chắc trong trường Đại học và khả năng tự nghiên cứu, ứng dụng các công nghệ hiện đại vào thực tiễn.
-        </p>
+        <SlantedBanner copy="Academic & Skills" variant="cyan" rotation="-4deg" size="sm" />
       </div>
 
       <!-- Part 1: University & GPA Showcase Card -->

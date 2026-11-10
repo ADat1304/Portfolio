@@ -5,6 +5,7 @@ import {
   Github, Linkedin, Download, Sparkles 
 } from 'lucide-vue-next';
 import { sound } from '../utils/sound';
+import SlantedBanner from './SlantedBanner.vue';
 
 const copied = ref(false);
 const isSubmitting = ref(false);
@@ -47,26 +48,24 @@ const submitForm = () => {
 </script>
 
 <template>
-  <section id="contact" class="py-24 relative bg-[#07080c] overflow-hidden">
+  <section id="contact" class="py-24 relative bg-[#242733] overflow-hidden">
     <!-- Ambient glow -->
     <div class="absolute top-1/2 right-1/4 w-[600px] h-[600px] ambient-glow-cyan pointer-events-none -z-10"></div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8">
       
       <!-- Section Header -->
-      <div class="text-center max-w-3xl mx-auto space-y-4 mb-16">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono">
-          <Mail class="w-3.5 h-3.5" />
-          <span>Sẵn sàng kết nối & hợp tác</span>
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-14 pb-6 border-b border-white/5">
+        <div class="space-y-2">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono">
+            <Mail class="w-3.5 h-3.5" />
+            <span>Sẵn sàng kết nối & hợp tác</span>
+          </div>
+          <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
+            Liên Hệ & <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-400 to-[#efab72]">Kết Nối</span>
+          </h2>
         </div>
-
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
-          Liên Hệ & <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400">Kết Nối</span>
-        </h2>
-
-        <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
-          Bạn đang có dự án thú vị, cơ hội thực tập / việc làm hay đơn giản muốn trò chuyện về công nghệ và Web 3D? Hãy để lại lời nhắn cho tôi nhé!
-        </p>
+        <SlantedBanner copy="Let's Connect" variant="cyan" rotation="-3deg" size="sm" />
       </div>
 
       <!-- Content Grid: Left Contact Info (5 cols) | Right Interactive Form (7 cols) -->

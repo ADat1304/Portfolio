@@ -27,3 +27,12 @@ dist-ssr
 # Local QA output and model inspection reports
 artifacts/
 scripts/*.blend.json
+
+# Blender autosaves and temporary authoring snapshots
+*.blend[0-9]*
+src/model/*_before_*.blend
+
+# Generated animation references
+animation-reference/*.png
+animation-reference/*.json
+animation-reference/*.csv

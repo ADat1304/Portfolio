@@ -44,7 +44,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="relative min-h-screen bg-[#08090d] text-[#e2e4ed] selection:bg-indigo-500/30 selection:text-indigo-200">
+  <div class="relative min-h-screen bg-[#808080] text-[#e2e4ed] selection:bg-indigo-500/30 selection:text-indigo-200">
     <!-- Navbar Header -->
     <Navbar />
     <ThreeExperience />

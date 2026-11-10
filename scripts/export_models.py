@@ -6,8 +6,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, 'public', 'models')
 os.makedirs(OUT, exist_ok=True)
 report = []
-for source, target in [('clay_workspace_deki.blend', 'workspace'), ('DekiModel_crown_filled_hair_ok.blend', 'deki')]:
-    bpy.ops.wm.open_mainfile(filepath=os.path.join(os.path.dirname(ROOT), source))
+for source, target in [('DekiModel_crown_filled_hair_ok.blend', 'deki')]:
+    bpy.ops.wm.open_mainfile(filepath=os.path.join(ROOT, 'src', 'model', source))
     if bpy.context.object and bpy.context.object.mode != 'OBJECT':
         bpy.ops.object.mode_set(mode='OBJECT')
     scene = bpy.context.scene
@@ -53,5 +53,10 @@ for source, target in [('clay_workspace_deki.blend', 'workspace'), ('DekiModel_c
     bpy.ops.export_scene.gltf(filepath=path, export_format='GLB', use_selection=True, export_animations=False, export_cameras=False, export_lights=False, export_yup=True, export_apply=True, export_extras=True, export_draco_mesh_compression_enable=True, export_draco_mesh_compression_level=6)
     report.append({'source': source, 'output': target + '.glb', 'bytes': os.path.getsize(path), 'groups': [o.name for o in exports], 'vertices': sum(len(o.data.vertices) for o in exports)})
     print('EXPORTED', report[-1], flush=True)
-with open(os.path.join(OUT, 'manifest.json'), 'w') as f:
+manifest_path = os.path.join(OUT, 'manifest.json')
+if os.path.exists(manifest_path):
+    with open(manifest_path) as f:
+        previous = json.load(f)
+    report = [entry for entry in previous if entry['output'] not in {'deki.glb', 'workspace.glb'}] + report
+with open(manifest_path, 'w') as f:
     json.dump(report, f, indent=2)

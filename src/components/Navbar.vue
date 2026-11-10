@@ -6,6 +6,16 @@ import { sound } from '../utils/sound';
 const isScrolled = ref(false);
 const mobileMenuOpen = ref(false);
 const soundEnabled = ref(true);
+const activeSection = ref<string>('hero');
+
+const navItems = [
+  { id: 'hero', name: 'Khởi đầu', href: '#hero' },
+  { id: 'about', name: 'Gặp Deki', href: '#about' },
+  { id: 'timeline', name: 'Hành trình', href: '#timeline' },
+  { id: 'skills', name: 'Kỹ năng', href: '#skills' },
+  { id: 'projects', name: 'Dự án', href: '#projects' },
+  { id: 'contact', name: 'Liên hệ', href: '#contact' },
+];
 
 const toggleSound = () => {
   soundEnabled.value = !soundEnabled.value;
@@ -15,16 +25,20 @@ const toggleSound = () => {
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 40;
-};
 
-const navItems = [
-  { name: 'Khởi đầu', href: '#hero' },
-  { name: 'Gặp Deki', href: '#about' },
-  { name: '3 Mốc thời gian', href: '#timeline' },
-  { name: 'Học vấn & Kỹ năng', href: '#skills' },
-  { name: 'Dự án', href: '#projects' },
-  { name: 'Liên hệ', href: '#contact' },
-];
+  // Active section detection
+  const scrollPosition = window.scrollY + 200;
+  for (const item of navItems) {
+    const el = document.querySelector(item.href);
+    if (el instanceof HTMLElement) {
+      const top = el.offsetTop;
+      const height = el.offsetHeight;
+      if (scrollPosition >= top && scrollPosition < top + height) {
+        activeSection.value = item.id;
+      }
+    }
+  }
+};
 
 const scrollToSection = (e: MouseEvent, href: string) => {
   e.preventDefault();
@@ -32,12 +46,15 @@ const scrollToSection = (e: MouseEvent, href: string) => {
   mobileMenuOpen.value = false;
   const target = document.querySelector(href);
   if (target) {
-    target.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+    target.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+    });
   }
 };
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll);
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  handleScroll();
 });
 
 onUnmounted(() => {
@@ -46,73 +63,78 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <header 
-    class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-    :class="isScrolled ? 'py-3 bg-[#08090d]/80 backdrop-blur-md border-b border-white/5 shadow-lg shadow-black/20' : 'py-5 bg-transparent'"
+  <header
+    class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 pointer-events-none"
+    :class="isScrolled ? 'py-3' : 'py-5'"
   >
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between">
+    <div class="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between pointer-events-auto">
         
         <!-- Logo -->
-        <a 
-          href="#hero" 
+        <a
+          href="#hero"
           @click="(e) => scrollToSection(e, '#hero')"
-          class="group flex items-center gap-2.5 text-white font-bold text-lg tracking-tight"
+          class="group flex items-center gap-3 text-white font-bold tracking-tight select-none"
         >
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 p-[1px] shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
-            <div class="w-full h-full bg-[#0d0e15] rounded-[11px] flex items-center justify-center text-cyan-400 font-mono text-sm font-bold">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#efab72] via-[#d4a475] to-[#38bdf8] p-[1.5px] shadow-lg shadow-[#efab72]/15 group-hover:scale-105 transition-transform">
+            <div class="w-full h-full bg-[#0a0c12] rounded-[9.5px] flex items-center justify-center text-[#efab72] font-mono text-sm font-bold">
               Đ
             </div>
           </div>
           <div class="flex flex-col">
-            <span class="text-sm font-semibold tracking-wider text-slate-200 group-hover:text-cyan-400 transition-colors">
+            <span class="text-sm font-semibold tracking-wider text-slate-100 group-hover:text-[#efab72] transition-colors">
               ANH ĐẠT
             </span>
-            <span class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
-              Software Dev
+            <span class="text-[9px] font-mono text-[#a89b88] uppercase tracking-widest">
+              Creative Dev / 2026
             </span>
           </div>
         </a>
 
-        <!-- Desktop Navigation -->
-        <nav class="hidden md:flex items-center gap-1 bg-[#12141c]/60 p-1.5 rounded-full border border-white/5 backdrop-blur-sm">
+        <!-- Desktop Navigation with Pill Indicator -->
+        <nav class="hidden md:flex items-center gap-1 bg-[#10121a]/80 p-1.5 rounded-full border border-white/10 backdrop-blur-xl shadow-xl shadow-black/30">
           <a
             v-for="item in navItems"
             :key="item.name"
             :href="item.href"
             @click="(e) => scrollToSection(e, item.href)"
-            class="px-4 py-1.5 text-xs font-medium text-slate-300 hover:text-white rounded-full hover:bg-white/5 transition-all"
+            class="relative px-3.5 py-1.5 text-xs font-medium rounded-full transition-all duration-200 select-none"
+            :class="
+              activeSection === item.id
+                ? 'text-[#f5c69b] bg-[#2a1d13] border border-[#efab72]/30 shadow-sm'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent'
+            "
           >
-            {{ item.name }}
+            <span class="relative z-10">{{ item.name }}</span>
           </a>
         </nav>
 
         <!-- Right actions -->
-        <div class="flex items-center gap-3">
-          <!-- Audio feedback toggle -->
-          <button 
+        <div class="flex items-center gap-2.5">
+          <!-- Audio toggle -->
+          <button
             @click="toggleSound"
-            :title="soundEnabled ? 'Tắt âm thanh hiệu ứng' : 'Bật âm thanh hiệu ứng'"
-            class="w-9 h-9 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/5 transition-all text-xs"
+            :title="soundEnabled ? 'Tắt âm thanh tương tác' : 'Bật âm thanh tương tác'"
+            class="w-9 h-9 rounded-full flex items-center justify-center bg-[#10121a]/80 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10 backdrop-blur-md transition-all text-xs"
           >
-            <Volume2 v-if="soundEnabled" class="w-4 h-4 text-cyan-400" />
+            <Volume2 v-if="soundEnabled" class="w-4 h-4 text-[#efab72]" />
             <VolumeX v-else class="w-4 h-4 text-slate-500" />
           </button>
 
-          <!-- Contact CTA -->
+          <!-- Contact CTA Button -->
           <a
             href="#contact"
             @click="(e) => scrollToSection(e, '#contact')"
-            class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-indigo-500 to-cyan-500 text-white shadow-md shadow-indigo-500/20 hover:opacity-95 hover:scale-[1.02] transition-all"
+            class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-[#2a1d13] text-[#f5c69b] border border-[#efab72]/40 hover:bg-[#3d2919] hover:border-[#efab72]/70 shadow-lg shadow-[#efab72]/10 transition-all hover:scale-[1.02]"
           >
             <span>Kết nối</span>
-            <ArrowUpRight class="w-3.5 h-3.5" />
+            <ArrowUpRight class="w-3.5 h-3.5 text-[#efab72]" />
           </a>
 
           <!-- Mobile Hamburger -->
-          <button 
+          <button
             @click="mobileMenuOpen = !mobileMenuOpen"
-            class="md:hidden w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 text-slate-300 hover:text-white"
+            class="md:hidden w-9 h-9 rounded-xl flex items-center justify-center bg-[#10121a]/80 border border-white/10 text-slate-300 hover:text-white backdrop-blur-md"
           >
             <Menu v-if="!mobileMenuOpen" class="w-5 h-5" />
             <X v-else class="w-5 h-5" />
@@ -122,16 +144,21 @@ onUnmounted(() => {
       </div>
 
       <!-- Mobile dropdown -->
-      <div 
+      <div
         v-if="mobileMenuOpen"
-        class="md:hidden mt-3 p-4 rounded-2xl bg-[#11131c] border border-white/10 shadow-2xl space-y-2 animate-in fade-in slide-in-from-top-2"
+        class="md:hidden mt-3 p-4 rounded-2xl bg-[#10121a]/95 border border-white/10 backdrop-blur-2xl shadow-2xl space-y-1.5 pointer-events-auto"
       >
         <a
           v-for="item in navItems"
           :key="item.name"
           :href="item.href"
           @click="(e) => scrollToSection(e, item.href)"
-          class="block px-3 py-2 text-sm text-slate-300 hover:text-cyan-400 hover:bg-white/5 rounded-lg transition-colors"
+          class="block px-3.5 py-2.5 text-sm rounded-xl transition-all font-medium"
+          :class="
+            activeSection === item.id
+              ? 'text-[#f5c69b] bg-[#2a1d13] border border-[#efab72]/30'
+              : 'text-slate-300 hover:text-[#efab72] hover:bg-white/5'
+          "
         >
           {{ item.name }}
         </a>

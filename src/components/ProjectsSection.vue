@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { FolderGit2, ArrowRight, Sparkles } from 'lucide-vue-next';
+import { FolderGit2, ArrowUpRight, Sparkles } from 'lucide-vue-next';
 import ProjectModal, { type ProjectDetail } from './ProjectModal.vue';
 import { sound } from '../utils/sound';
+import NotchSection from './NotchSection.vue';
+import Notch from './Notch.vue';
+import SlantedBanner from './SlantedBanner.vue';
 
 const selectedProject = ref<ProjectDetail | null>(null);
 const isModalOpen = ref(false);
@@ -99,22 +102,27 @@ const closeModal = () => {
 </script>
 
 <template>
-  <section id="projects" class="py-24 relative bg-[#090a0f] border-t border-white/5">
-    <!-- Ambient light -->
-    <div class="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] ambient-glow-indigo pointer-events-none -z-10"></div>
+  <section id="projects" class="relative bg-[#1a1c25] py-20 md:py-28 overflow-hidden">
+    <!-- Top Notch Section Transition -->
+    <div class="absolute top-0 left-0 right-0">
+      <NotchSection color="#242733" size="32px" />
+    </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Ambient Glows -->
+    <div class="absolute bottom-1/4 left-1/4 w-[600px] h-[600px] ambient-glow-indigo pointer-events-none -z-10" />
+
+    <div class="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8">
       
       <!-- Section Header -->
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-16 pb-6 border-b border-white/5">
         <div class="space-y-3 max-w-2xl text-left">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-mono">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-mono">
             <FolderGit2 class="w-3.5 h-3.5" />
             <span>Sản phẩm thực tế & Đồ án học phần</span>
           </div>
 
-          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
-            Dự Án <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-400 to-purple-400">Tiêu Biểu</span>
+          <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
+            Dự Án <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-400 to-[#efab72]">Tiêu Biểu</span>
           </h2>
 
           <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
@@ -122,51 +130,65 @@ const closeModal = () => {
           </p>
         </div>
 
-        <div class="flex items-center gap-2 text-xs font-mono text-slate-500">
-          <span>Click vào dự án để xem Case Study chi tiết</span>
-        </div>
+        <SlantedBanner copy="Selected Works" variant="orange" rotation="-5deg" size="md" />
       </div>
 
-      <!-- Projects Grid (2x2 layout with rich cards) -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Projects Grid (Preview Cards with Signature Pocket Notch Button) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
         
         <div
           v-for="item in projects"
           :key="item.id"
           @click="openProject(item)"
-          class="group rounded-3xl p-7 bg-[#10121d] hover:bg-[#131625] border border-white/5 hover:border-indigo-500/40 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-indigo-500/10 flex flex-col justify-between cursor-pointer"
+          class="project-card group rounded-3xl p-6 sm:p-7 bg-[#111320] hover:bg-[#141728] border border-white/5 hover:border-[#efab72]/40 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-[#efab72]/5 flex flex-col justify-between cursor-pointer relative"
         >
           <div class="space-y-5">
             
-            <!-- Graphic Preview Banner -->
+            <!-- Graphic Preview Banner with Notch Pocket -->
             <div 
-              class="w-full h-44 rounded-2xl p-6 flex flex-col justify-between relative overflow-hidden transition-transform duration-500 group-hover:scale-[1.01]"
+              class="project-image-box w-full h-48 sm:h-56 rounded-2xl p-6 flex flex-col justify-between relative overflow-hidden transition-transform duration-500 group-hover:scale-[1.01]"
               :style="{ background: item.featuredImg }"
             >
-              <div class="absolute inset-0 bg-black/20"></div>
+              <div class="absolute inset-0 bg-black/25"></div>
               
+              <!-- Badges -->
               <div class="relative z-10 flex items-center justify-between">
-                <span class="px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-black/50 text-white backdrop-blur-md border border-white/10">
+                <span class="px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-black/60 text-white backdrop-blur-md border border-white/10">
                   {{ item.category }}
                 </span>
-                <span class="text-xs font-mono text-white/80 bg-black/30 px-2 py-0.5 rounded backdrop-blur-sm">
+                <span class="text-xs font-mono text-white/90 bg-black/40 px-2.5 py-0.5 rounded backdrop-blur-sm">
                   {{ item.year }}
                 </span>
               </div>
 
-              <div class="relative z-10 flex items-center justify-between">
-                <div class="text-white text-lg font-bold tracking-tight">
-                  {{ item.title }}
+              <!-- Title inside image -->
+              <div class="relative z-10 text-white text-lg sm:text-xl font-bold tracking-tight max-w-[80%] drop-shadow-md">
+                {{ item.title }}
+              </div>
+
+              <!-- Corner Pocket with Notch & Circular Arrow Button -->
+              <div class="pocket-container absolute bottom-0 right-0 z-20">
+                <!-- Notch curves surrounding pocket -->
+                <div class="pocket-notch-left absolute bottom-0 right-[46px] text-[#111320] group-hover:text-[#141728] transition-colors">
+                  <Notch size="14px" />
                 </div>
-                <div class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">
-                  <ArrowRight class="w-4 h-4" />
+                <div class="pocket-notch-top absolute bottom-[46px] right-0 text-[#111320] group-hover:text-[#141728] transition-colors">
+                  <Notch size="14px" />
+                </div>
+
+                <!-- Pocket corner base -->
+                <div class="pocket-base bg-[#111320] group-hover:bg-[#141728] pl-2.5 pt-2.5 rounded-tl-2xl transition-colors">
+                  <div class="w-10 h-10 rounded-full bg-[#efab72] text-[#1a1109] flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                    <ArrowUpRight :size="18" class="group-hover:rotate-45 transition-transform duration-200" />
+                  </div>
                 </div>
               </div>
+
             </div>
 
             <!-- Description -->
-            <div class="space-y-2 text-left">
-              <h3 class="text-xl font-bold text-white group-hover:text-cyan-300 transition-colors">
+            <div class="space-y-2 text-left pt-1">
+              <h3 class="text-xl font-bold text-white group-hover:text-[#efab72] transition-colors">
                 {{ item.title }}
               </h3>
               <p class="text-xs sm:text-sm text-slate-400 leading-relaxed line-clamp-2">
@@ -174,9 +196,9 @@ const closeModal = () => {
               </p>
             </div>
 
-            <!-- Key Metric / Result snippet -->
+            <!-- Key Metric snippet -->
             <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-2.5 text-xs text-slate-300">
-              <Sparkles class="w-4 h-4 text-cyan-400 shrink-0" />
+              <Sparkles class="w-4 h-4 text-[#efab72] shrink-0" />
               <span class="line-clamp-1">{{ item.results[0] }}</span>
             </div>
 
@@ -188,7 +210,7 @@ const closeModal = () => {
               <span
                 v-for="tag in item.tags.slice(0, 3)"
                 :key="tag"
-                class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 text-slate-400 border border-white/5"
+                class="px-2.5 py-1 rounded-md text-[10px] font-mono bg-white/5 text-slate-400 border border-white/5"
               >
                 {{ tag }}
               </span>
@@ -197,7 +219,7 @@ const closeModal = () => {
               </span>
             </div>
 
-            <span class="text-xs font-semibold text-cyan-400 group-hover:underline flex items-center gap-1">
+            <span class="text-xs font-semibold text-[#efab72] group-hover:underline flex items-center gap-1">
               Xem Case Study &rarr;
             </span>
           </div>
@@ -208,6 +230,11 @@ const closeModal = () => {
 
     </div>
 
+    <!-- Bottom Notch Section Transition -->
+    <div class="absolute bottom-0 left-0 right-0">
+      <NotchSection color="#242733" size="32px" :inverted="true" />
+    </div>
+
     <!-- Case study detail modal -->
     <ProjectModal
       :project="selectedProject"
@@ -216,3 +243,12 @@ const closeModal = () => {
     />
   </section>
 </template>
+
+<style scoped>
+.pocket-notch-left {
+  transform: rotate(90deg) scaleY(-1);
+}
+.pocket-notch-top {
+  transform: rotate(90deg) scaleX(-1);
+}
+</style>

@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { MapPin, Sparkles, Layers, RotateCw } from 'lucide-vue-next';
 import { sound } from '../utils/sound';
+import SlantedBanner from './SlantedBanner.vue';
 
 interface TimelineItem {
   id: string;
@@ -76,25 +77,28 @@ const selectStage = (index: number) => {
 </script>
 
 <template>
-  <section id="timeline" class="py-24 relative overflow-hidden bg-[#0a0b10] border-t border-b border-white/5">
+  <section id="timeline" class="py-24 relative overflow-hidden bg-[#242733] border-t border-b border-white/5">
     <!-- Ambient backdrops -->
     <div class="absolute top-1/2 left-0 w-96 h-96 ambient-glow-cyan pointer-events-none -z-10"></div>
     <div class="absolute top-1/3 right-0 w-96 h-96 ambient-glow-purple pointer-events-none -z-10"></div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8">
       
       <!-- Section Header -->
-      <div class="text-center max-w-3xl mx-auto space-y-4">
-        
-        <!-- Transition narration badge -->
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-mono">
-          <Sparkles class="w-3.5 h-3.5 text-cyan-400" />
-          <span>Chuyển cảnh: Đạt đứng dậy & bước qua 3 mốc thời gian</span>
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12 pb-6 border-b border-white/5">
+        <div class="space-y-2">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-mono">
+            <Sparkles class="w-3.5 h-3.5 text-cyan-400" />
+            <span>Chuyển cảnh: 3 mốc thời gian</span>
+          </div>
+          <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
+            Hành Trình <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-400 to-[#efab72]">Trưởng Thành</span>
+          </h2>
         </div>
+        <SlantedBanner copy="3 Lifelines" variant="indigo" rotation="-4deg" size="sm" />
+      </div>
 
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
-          Hành Trình <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400">Trưởng Thành</span>
-        </h2>
+      <div class="text-center max-w-3xl mx-auto space-y-4">
 
         <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
           Mỗi mốc thời gian đại diện cho một bước chuyển mình của tôi: từ cậu bé hiếu học nơi đất mẹ Hà Tĩnh, đến nam sinh say mê thuật toán cấp 3, và phiên bản kỹ sư công nghệ sẵn sàng bứt phá hôm nay.
