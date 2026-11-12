@@ -1,4 +1,4 @@
-import { CanvasTexture, Color, MeshStandardMaterial, MeshMatcapMaterial, SRGBColorSpace, ShaderMaterial, AdditiveBlending, DoubleSide } from 'three';
+import { CanvasTexture, Color, MeshStandardMaterial, MeshMatcapMaterial, SRGBColorSpace, ShaderMaterial, DoubleSide } from 'three';
 import hologramVertex from './shaders/hologram.vert.glsl?raw';
 import hologramFragment from './shaders/hologram.frag.glsl?raw';
 import gridVertex from './shaders/grid.vert.glsl?raw';
@@ -33,11 +33,15 @@ export function clay(color: Color, matcap: CanvasTexture) {
   return new MeshMatcapMaterial({ color, matcap });
 }
 
-export function hologram() {
+export function hologram(color: Color, matcap: CanvasTexture, height: number) {
   return new ShaderMaterial({
     vertexShader: hologramVertex, fragmentShader: hologramFragment,
-    uniforms: { uTime: { value: 0 } }, transparent: true,
-    blending: AdditiveBlending, depthWrite: false, side: DoubleSide,
+    uniforms: {
+      uTime: { value: 0 }, uProgress: { value: 0 },
+      uMinY: { value: -height / 2 }, uHeight: { value: height },
+      uBaseColor: { value: color.clone() }, uMatcap: { value: matcap },
+    },
+    transparent: true, side: DoubleSide,
   });
 }
 

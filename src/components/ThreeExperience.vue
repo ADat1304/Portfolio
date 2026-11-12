@@ -14,11 +14,7 @@ const notify = (text: string) => {
   clearTimeout(timer);
   timer = setTimeout(() => { message.value = ''; }, 3500);
 };
-const toggleHologram = (event: Event) => {
-  if (experience) experience.holographic = (event as CustomEvent<boolean>).detail;
-};
 onMounted(async () => {
-  window.addEventListener('deki:hologram', toggleHologram);
   try {
     const { Experience } = await import('../three/experience');
     if (!mounted) return;
@@ -39,7 +35,6 @@ onUnmounted(() => {
   mounted = false;
   clearTimeout(timer);
   experience?.destroy();
-  window.removeEventListener('deki:hologram', toggleHologram);
   document.documentElement.classList.remove('three-unavailable');
 });
 </script>

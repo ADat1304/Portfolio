@@ -106,7 +106,7 @@ const certifications = [
             <div class="flex items-start justify-between gap-4">
               <div class="space-y-1">
                 <span class="text-xs font-mono text-cyan-400 font-semibold uppercase tracking-wider">Trường Đại học</span>
-                <h3 class="text-xl sm:text-2xl font-bold text-white">Đại Học Bách Khoa Hà Nội (HUST)</h3>
+                <h3 class="text-xl sm:text-2xl font-bold text-white">Đại học Công nghiệp Hà Nội (HaUI)</h3>
                 <p class="text-xs sm:text-sm text-slate-400">Chuyên ngành: <strong class="text-slate-200">Khoa Học Máy Tính (Computer Science)</strong> &bull; Niên khóa: 2022 - 2026</p>
               </div>
               <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 text-xl font-bold shrink-0">

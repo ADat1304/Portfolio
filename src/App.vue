@@ -2,13 +2,12 @@
 import { onMounted, onUnmounted } from 'vue';
 import Lenis from 'lenis';
 import Navbar from './components/Navbar.vue';
-import HeroSection from './components/HeroSection.vue';
+import ScrollIntro from './components/ScrollIntro.vue';
 import TimelineSection from './components/TimelineSection.vue';
 import SkillsEducationSection from './components/SkillsEducationSection.vue';
 import ProjectsSection from './components/ProjectsSection.vue';
 import ContactSection from './components/ContactSection.vue';
 import ThreeExperience from './components/ThreeExperience.vue';
-import AboutDeki from './components/AboutDeki.vue';
 import ContactDeki from './components/ContactDeki.vue';
 
 let lenis: Lenis | null = null;
@@ -52,8 +51,7 @@ onUnmounted(() => {
     <!-- Main Narrative Sections -->
     <main>
       <!-- Scene 1: Hero Workstation Studio -->
-      <HeroSection />
-      <AboutDeki />
+      <ScrollIntro />
 
       <!-- Scene 2: The 3 Lifelines / Standing Up (Hà Tĩnh - Cấp 3 - Hiện Tại) -->
       <TimelineSection />

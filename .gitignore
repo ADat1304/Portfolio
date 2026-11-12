@@ -26,7 +26,10 @@ dist-ssr
 
 # Local QA output and model inspection reports
 artifacts/
+output/
 scripts/*.blend.json
+.agents/
+skills-lock.json
 
 # Blender autosaves and temporary authoring snapshots
 *.blend[0-9]*

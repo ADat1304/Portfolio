@@ -31,12 +31,17 @@ const handleScroll = () => {
   for (const item of navItems) {
     const el = document.querySelector(item.href);
     if (el instanceof HTMLElement) {
-      const top = el.offsetTop;
+      const top = el.getBoundingClientRect().top + window.scrollY;
       const height = el.offsetHeight;
       if (scrollPosition >= top && scrollPosition < top + height) {
         activeSection.value = item.id;
       }
     }
+  }
+  const intro = document.querySelector('.scroll-intro');
+  const about = document.getElementById('about');
+  if (intro && about && scrollPosition < intro.getBoundingClientRect().bottom + window.scrollY) {
+    activeSection.value = scrollPosition >= about.getBoundingClientRect().top + window.scrollY ? 'about' : 'hero';
   }
 };
 

@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <section id="hero" class="relative w-full h-[92vh] sm:h-[95vh] md:h-screen flex items-center justify-center overflow-hidden">
+  <section aria-label="Không gian làm việc của Deki" class="relative w-full h-[92vh] sm:h-[95vh] md:h-screen flex items-center justify-center overflow-hidden">
     <!-- Ambient backlight harmonizing with the wall atmosphere -->
     <div class="absolute inset-0 bg-radial from-white/5 to-transparent pointer-events-none -z-10" />
 
