@@ -7,7 +7,7 @@ import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
 import { WorkspaceAnimation, type WorkspaceClip } from './workspace-animation';
 import { Resources } from './resources';
 import { WorkspaceScreens } from './workspace-screens';
-import { introScroll, introTransition, smooth } from './scroll-story';
+import { introScroll, introTransition, scanProgress, smooth } from './scroll-story';
 import { clay, createMatcap, grid, hologram, woodFloor, grayWall } from './materials';
 import { precompile } from './compile';
 
@@ -65,7 +65,7 @@ export class Experience {
     this.listeners.push(() => target.removeEventListener(event, callback));
   }
 
-  async init(progress: (value: number) => void) {
+  async init(progress: (value: number, items?: Record<string, number>) => void) {
     const loaded = await this.resources.load(progress);
     if (this.disposed) {
       for (const resource of Object.values(loaded)) this.disposeTree(resource.scene);
@@ -97,6 +97,12 @@ export class Experience {
       if (!element) continue;
       const source = kind === 'workspace' ? loaded.workspace.scene : loaded.deki.scene;
       const model = cloneSkeleton(source) as Group;
+      if (kind !== 'workspace') {
+        const charBounds = new Box3().setFromObject(model);
+        const pedestal = cloneSkeleton(loaded.pedestal.scene) as Group;
+        pedestal.position.y = charBounds.min.y;
+        model.add(pedestal);
+      }
       let bounds = new Box3().setFromObject(model);
       if (kind === 'workspace') {
         const deskBox = new Box3();
@@ -242,9 +248,12 @@ export class Experience {
     const time = this.reduced.matches ? 0 : performance.now() / 1000;
     const story = introScroll.active && !this.reduced.matches;
     const transition = introTransition(introScroll.progress);
+    const holoRatio = story ? transition.hologram : 1;
+    const nextPercent = Math.round(holoRatio * 100);
+    if (scanProgress.percent !== nextPercent) scanProgress.percent = nextPercent;
     for (const material of this.holoMaterials) {
       material.uniforms.uTime!.value = time;
-      material.uniforms.uProgress!.value = story ? transition.hologram : 1;
+      material.uniforms.uProgress!.value = holoRatio;
     }
     for (const material of this.grids) material.uniforms.uTime!.value = time;
     this.renderer.setScissorTest(false);
@@ -265,7 +274,7 @@ export class Experience {
       // A portrait viewport needs a gentler fit than 1 / aspect.
       const halfFov = Math.tan(camera.fov * Math.PI / 360);
       const distance = kind === 'about'
-        ? Math.max(stage.height / (2 * halfFov), stage.width / (2 * halfFov * camera.aspect)) * 1.18
+        ? Math.max(stage.height / (2 * halfFov), stage.width / (2 * halfFov * camera.aspect)) * 1.04
         : stage.distance * (kind === 'workspace' ? Math.sqrt(fit) : fit);
       const sectionProgress = Math.max(-1, Math.min(1, (innerHeight * 0.5 - rect.top - rect.height * 0.5) / innerHeight));
       const parallax = this.reduced.matches ? 0 : stage.pointer.x * 0.045 + sectionProgress * 0.12;

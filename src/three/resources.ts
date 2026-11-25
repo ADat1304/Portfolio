@@ -9,14 +9,35 @@ export class Resources {
 
   constructor() { this.loader.setDRACOLoader(this.draco); }
 
-  load(progress: (value: number) => void) {
+  load(progress: (value: number, items?: Record<string, number>) => void) {
     if (this.pending) return this.pending;
-    let complete = 0;
-    this.pending = Promise.all(Object.entries(sources).map(async ([name, url]) => {
-      const model = await this.loader.loadAsync(url);
-      progress(++complete / Object.keys(sources).length * 75);
+    const entries = Object.entries(sources);
+    const itemProgress: Record<string, number> = Object.fromEntries(entries.map(([name]) => [name, 0]));
+    const report = () => {
+      const avg = Object.values(itemProgress).reduce((sum, v) => sum + v, 0) / entries.length;
+      progress(avg * 0.75, { ...itemProgress });
+    };
+    report();
+    this.pending = Promise.all(entries.map(async ([name, url]) => {
+      const model = await new Promise<GLTF>((resolve, reject) => {
+        this.loader.load(
+          url,
+          gltf => {
+            itemProgress[name] = 100;
+            report();
+            resolve(gltf);
+          },
+          event => {
+            if (event.lengthComputable && event.total > 0) {
+              itemProgress[name] = Math.min(99, Math.round((event.loaded / event.total) * 100));
+              report();
+            }
+          },
+          reject
+        );
+      });
       return [name, model] as const;
-    })).then(entries => Object.fromEntries(entries) as Record<keyof typeof sources, GLTF>).finally(() => this.draco.dispose());
+    })).then(loaded => Object.fromEntries(loaded) as Record<keyof typeof sources, GLTF>).finally(() => this.draco.dispose());
     return this.pending;
   }
 }

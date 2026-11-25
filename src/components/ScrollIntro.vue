@@ -4,10 +4,11 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import HeroSection from './HeroSection.vue';
 import AboutDeki from './AboutDeki.vue';
-import { introScroll } from '../three/scroll-story';
+import { introScroll, introTransition } from '../three/scroll-story';
 
 gsap.registerPlugin(ScrollTrigger);
 const root = ref<HTMLElement>();
+const hologramProgress = ref(1);
 let media: gsap.MatchMedia | undefined;
 
 onMounted(() => {
@@ -17,7 +18,11 @@ onMounted(() => {
     introScroll.active = true;
     const timeline = gsap.timeline({
       defaults: { ease: 'none' },
-      onUpdate: () => { element.dataset.scrollProgress = String(introScroll.progress); },
+      onUpdate: () => {
+        const { progress } = introScroll;
+        hologramProgress.value = introTransition(progress).hologram;
+        element.dataset.scrollProgress = String(progress);
+      },
       scrollTrigger: {
         trigger: element,
         start: 'top top',
@@ -33,15 +38,13 @@ onMounted(() => {
     timeline.fromTo('.about-atmosphere, .about-orbit', { opacity: 0 }, { opacity: 1, duration: 0.25 }, 0.46);
     timeline.fromTo('.about-caption-holo', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.07 }, 0.65);
     timeline.to('.about-caption-clay', { autoAlpha: 0, duration: 0.07 }, 0.65);
-    ['name', 'age', 'hometown', 'education'].forEach((key, index) => {
-      timeline.fromTo('.about-fact-' + key, { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.09 }, 0.73 + index * 0.035);
-    });
     timeline.to('.about-scroll-caption', { autoAlpha: 0, duration: 0.05 }, 0.83);
     timeline.fromTo('.about-next', { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.08 }, 0.88);
     timeline.to('.intro-progress-fill', { scaleX: 1, duration: 1 }, 0);
     return () => {
       introScroll.active = false;
       introScroll.progress = 0;
+      hologramProgress.value = 1;
       delete element.dataset.scrollProgress;
     };
   }, root.value);
@@ -54,7 +57,7 @@ onUnmounted(() => media?.revert());
   <div id="hero" ref="root" class="scroll-intro">
     <div class="intro-sticky-frame">
       <HeroSection class="intro-workspace" />
-      <AboutDeki class="story-about" />
+      <AboutDeki class="story-about" :hologram-progress="hologramProgress" />
       <div class="intro-progress" aria-hidden="true"><div class="intro-progress-fill" /></div>
     </div>
     <a href="#about" class="intro-scroll-hint">
