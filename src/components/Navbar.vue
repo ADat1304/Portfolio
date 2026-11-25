@@ -46,9 +46,15 @@ const handleScroll = () => {
 };
 
 const scrollToSection = (e: MouseEvent, href: string) => {
-  e.preventDefault();
   sound.playClick();
   mobileMenuOpen.value = false;
+  if (href === '#skills') return;
+  e.preventDefault();
+  if (location.hash === '#skills') {
+    // Use a real fragment navigation so the on-demand section collapses.
+    location.hash = href;
+    return;
+  }
   const target = document.querySelector(href);
   if (target) {
     target.scrollIntoView({
@@ -81,23 +87,23 @@ onUnmounted(() => {
           @click="(e) => scrollToSection(e, '#hero')"
           class="group flex items-center gap-3 text-white font-bold tracking-tight select-none"
         >
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#efab72] via-[#d4a475] to-[#38bdf8] p-[1.5px] shadow-lg shadow-[#efab72]/15 group-hover:scale-105 transition-transform">
-            <div class="w-full h-full bg-[#0a0c12] rounded-[9.5px] flex items-center justify-center text-[#efab72] font-mono text-sm font-bold">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#f04458] via-[#721625] to-[#ce1739] p-[1.5px] shadow-lg shadow-[#f04458]/15 group-hover:scale-105 transition-transform">
+            <div class="w-full h-full bg-[#0a0c12] rounded-[9.5px] flex items-center justify-center text-[#f04458] font-mono text-sm font-bold">
               Đ
             </div>
           </div>
           <div class="flex flex-col">
-            <span class="text-sm font-semibold tracking-wider text-slate-100 group-hover:text-[#efab72] transition-colors">
+            <span class="text-sm font-semibold tracking-wider text-slate-100 group-hover:text-[#f04458] transition-colors">
               ANH ĐẠT
             </span>
-            <span class="text-[9px] font-mono text-[#a89b88] uppercase tracking-widest">
+            <span class="text-[9px] font-mono text-[#c4c0c4] uppercase tracking-widest">
               Creative Dev / 2026
             </span>
           </div>
         </a>
 
         <!-- Desktop Navigation with Pill Indicator -->
-        <nav class="hidden md:flex items-center gap-1 bg-[#10121a]/80 p-1.5 rounded-full border border-white/10 backdrop-blur-xl shadow-xl shadow-black/30">
+        <nav class="hidden md:flex items-center gap-1 bg-[#111113]/80 p-1.5 rounded-full border border-white/10 backdrop-blur-xl shadow-xl shadow-black/30">
           <a
             v-for="item in navItems"
             :key="item.name"
@@ -106,8 +112,8 @@ onUnmounted(() => {
             class="relative px-3.5 py-1.5 text-xs font-medium rounded-full transition-all duration-200 select-none"
             :class="
               activeSection === item.id
-                ? 'text-[#f5c69b] bg-[#2a1d13] border border-[#efab72]/30 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent'
+                ? 'text-[#fff1f3] bg-[#c91f38] border border-[#f04458]/30 shadow-sm'
+                : 'text-portfolio-muted hover:text-slate-200 hover:bg-white/5 border border-transparent'
             "
           >
             <span class="relative z-10">{{ item.name }}</span>
@@ -120,9 +126,9 @@ onUnmounted(() => {
           <button
             @click="toggleSound"
             :title="soundEnabled ? 'Tắt âm thanh tương tác' : 'Bật âm thanh tương tác'"
-            class="w-9 h-9 rounded-full flex items-center justify-center bg-[#10121a]/80 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10 backdrop-blur-md transition-all text-xs"
+            class="w-9 h-9 rounded-full flex items-center justify-center bg-[#111113]/80 hover:bg-white/10 text-portfolio-muted hover:text-white border border-white/10 backdrop-blur-md transition-all text-xs"
           >
-            <Volume2 v-if="soundEnabled" class="w-4 h-4 text-[#efab72]" />
+            <Volume2 v-if="soundEnabled" class="w-4 h-4 text-[#f04458]" />
             <VolumeX v-else class="w-4 h-4 text-slate-500" />
           </button>
 
@@ -130,16 +136,16 @@ onUnmounted(() => {
           <a
             href="#contact"
             @click="(e) => scrollToSection(e, '#contact')"
-            class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-[#2a1d13] text-[#f5c69b] border border-[#efab72]/40 hover:bg-[#3d2919] hover:border-[#efab72]/70 shadow-lg shadow-[#efab72]/10 transition-all hover:scale-[1.02]"
+            class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-[#c91f38] text-[#fff1f3] border border-[#f04458]/40 hover:bg-[#d12340] hover:border-[#f04458]/70 shadow-lg shadow-[#f04458]/10 transition-all hover:scale-[1.02]"
           >
             <span>Kết nối</span>
-            <ArrowUpRight class="w-3.5 h-3.5 text-[#efab72]" />
+            <ArrowUpRight class="w-3.5 h-3.5 text-[#f04458]" />
           </a>
 
           <!-- Mobile Hamburger -->
           <button
             @click="mobileMenuOpen = !mobileMenuOpen"
-            class="md:hidden w-9 h-9 rounded-xl flex items-center justify-center bg-[#10121a]/80 border border-white/10 text-slate-300 hover:text-white backdrop-blur-md"
+            class="md:hidden w-9 h-9 rounded-xl flex items-center justify-center bg-[#111113]/80 border border-white/10 text-portfolio-muted hover:text-white backdrop-blur-md"
           >
             <Menu v-if="!mobileMenuOpen" class="w-5 h-5" />
             <X v-else class="w-5 h-5" />
@@ -151,7 +157,7 @@ onUnmounted(() => {
       <!-- Mobile dropdown -->
       <div
         v-if="mobileMenuOpen"
-        class="md:hidden mt-3 p-4 rounded-2xl bg-[#10121a]/95 border border-white/10 backdrop-blur-2xl shadow-2xl space-y-1.5 pointer-events-auto"
+        class="md:hidden mt-3 p-4 rounded-2xl bg-[#111113]/95 border border-white/10 backdrop-blur-2xl shadow-2xl space-y-1.5 pointer-events-auto"
       >
         <a
           v-for="item in navItems"
@@ -161,8 +167,8 @@ onUnmounted(() => {
           class="block px-3.5 py-2.5 text-sm rounded-xl transition-all font-medium"
           :class="
             activeSection === item.id
-              ? 'text-[#f5c69b] bg-[#2a1d13] border border-[#efab72]/30'
-              : 'text-slate-300 hover:text-[#efab72] hover:bg-white/5'
+              ? 'text-[#fff1f3] bg-[#c91f38] border border-[#f04458]/30'
+              : 'text-portfolio-muted hover:text-[#f04458] hover:bg-white/5'
           "
         >
           {{ item.name }}

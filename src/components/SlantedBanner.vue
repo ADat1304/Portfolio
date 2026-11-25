@@ -5,7 +5,7 @@ const props = withDefaults(
   defineProps<{
     copy: string;
     size?: 'sm' | 'md' | 'lg';
-    variant?: 'orange' | 'cyan' | 'indigo' | 'dark';
+    variant?: 'orange' | 'cyan' | 'indigo' | 'dark' | 'red';
     rotation?: string;
     showDot?: boolean;
   }>(),
@@ -19,6 +19,8 @@ const props = withDefaults(
 
 const variantClasses = computed(() => {
   switch (props.variant) {
+    case 'red':
+      return 'bg-portfolio-maroon/65 text-portfolio-accent border-portfolio-glow/40';
     case 'cyan':
       return 'bg-cyan-950/80 text-cyan-300 border-cyan-400/40 shadow-cyan-900/30';
     case 'indigo':
@@ -53,7 +55,7 @@ const sizeClasses = computed(() => {
     <span
       v-if="showDot"
       class="w-1.5 h-1.5 rounded-full animate-pulse"
-      :class="variant === 'cyan' ? 'bg-cyan-400' : variant === 'indigo' ? 'bg-indigo-400' : 'bg-[#efab72]'"
+      :class="variant === 'red' ? 'bg-portfolio-glow' : variant === 'cyan' ? 'bg-cyan-400' : variant === 'indigo' ? 'bg-indigo-400' : 'bg-[#efab72]'"
     />
     <span>{{ copy }}</span>
   </div>

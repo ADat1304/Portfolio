@@ -1,17 +1,20 @@
 [
   {
-    "source": "DekiModel_crown_filled_hair_ok.blend",
+    "source": "Breathing Idle.fbx",
     "output": "deki.glb",
-    "bytes": 591360,
-    "groups": [
-      "deki"
+    "bytes": 1824088,
+    "animations": [
+      {
+        "name": "breathing-idle"
+      }
     ],
-    "vertices": 129976
+    "skinned": true,
+    "compression": "KHR_draco_mesh_compression"
   },
   {
     "source": "clay_workspace_animated.blend",
     "output": "workspace-animated.glb",
-    "bytes": 3516264,
+    "bytes": 3536932,
     "animations": [
       {
         "name": "typing",
@@ -23,6 +26,18 @@
       }
     ],
     "skinned": true,
+    "compression": "KHR_draco_mesh_compression"
+  },
+  {
+    "source": "pedestal.blend",
+    "output": "pedestal.glb",
+    "bytes": 32068,
+    "groups": [
+      "SM_Pedestal_Core",
+      "SM_Pedestal_Struts",
+      "SM_Pedestal_Display",
+      "SM_Pedestal_Screen"
+    ],
     "compression": "KHR_draco_mesh_compression"
   }
 ]

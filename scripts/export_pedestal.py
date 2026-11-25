@@ -1,5 +1,5 @@
-"""Export standalone pedestal.blend to public/models/pedestal.glb."""
-import bpy, os, ctypes
+"""Build & export standalone pedestal.blend (with flush front display console) to public/models/pedestal.glb."""
+import bpy, bmesh, math, os, ctypes
 from pathlib import Path
 
 try:
@@ -12,8 +12,9 @@ blend_path = ROOT / 'src/model/pedestal.blend'
 glb_path = ROOT / 'public/models/pedestal.glb'
 
 bpy.ops.wm.open_mainfile(filepath=str(blend_path))
+scene = bpy.context.scene
 bpy.ops.object.select_all(action='DESELECT')
-for obj in bpy.context.scene.objects:
+for obj in scene.objects:
     if obj.type == 'MESH' and not obj.hide_render:
         obj.select_set(True)
         bpy.context.view_layer.objects.active = obj

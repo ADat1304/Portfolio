@@ -28,7 +28,7 @@ const projects: ProjectDetail[] = [
     tags: ['Vue 3', 'Three.js', 'Blender', 'GLSL Shader', 'GSAP'],
     demoUrl: '#',
     githubUrl: 'https://github.com/example/aura-verse',
-    featuredImg: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #0e7490 100%)'
+    featuredImg: '#35151d'
   },
   {
     id: 'edutrack-ai',
@@ -47,7 +47,7 @@ const projects: ProjectDetail[] = [
     tags: ['Vue 3', 'TypeScript', 'FastAPI', 'PostgreSQL', 'Chart.js'],
     demoUrl: '#',
     githubUrl: 'https://github.com/example/edutrack-ai',
-    featuredImg: 'linear-gradient(135deg, #064e3b 0%, #047857 50%, #0284c7 100%)'
+    featuredImg: 'linear-gradient(159.84deg, #35151d 50%, #f04458 100%)'
   },
   {
     id: 'viet-heritage',
@@ -66,7 +66,7 @@ const projects: ProjectDetail[] = [
     tags: ['WebXR', 'Three.js', 'Photogrammetry', 'TypeScript', 'Tailwind'],
     demoUrl: '#',
     githubUrl: 'https://github.com/example/viet-heritage',
-    featuredImg: 'linear-gradient(135deg, #701a75 0%, #4c1d95 50%, #1e1b4b 100%)'
+    featuredImg: 'linear-gradient(159.84deg, #35151d, #ff5263, #35151d)'
   },
   {
     id: 'dev-pulse',
@@ -85,7 +85,7 @@ const projects: ProjectDetail[] = [
     tags: ['Vue 3', 'Golang', 'WebSocket', 'Docker', 'Redis'],
     demoUrl: '#',
     githubUrl: 'https://github.com/example/dev-pulse',
-    featuredImg: 'linear-gradient(135deg, #431407 0%, #7c2d12 50%, #1e293b 100%)'
+    featuredImg: '#35151d'
   }
 ];
 
@@ -102,35 +102,32 @@ const closeModal = () => {
 </script>
 
 <template>
-  <section id="projects" class="relative bg-[#1a1c25] py-20 md:py-28 overflow-hidden">
+  <section id="projects" class="relative bg-portfolio-base py-20 md:py-28 overflow-hidden">
     <!-- Top Notch Section Transition -->
     <div class="absolute top-0 left-0 right-0">
-      <NotchSection color="#242733" size="32px" />
+      <NotchSection color="var(--color-portfolio-base)" size="32px" />
     </div>
-
-    <!-- Ambient Glows -->
-    <div class="absolute bottom-1/4 left-1/4 w-[600px] h-[600px] ambient-glow-indigo pointer-events-none -z-10" />
 
     <div class="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8">
       
       <!-- Section Header -->
       <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-16 pb-6 border-b border-white/5">
         <div class="space-y-3 max-w-2xl text-left">
-          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-mono">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-portfolio-glow/10 border border-portfolio-glow/20 text-portfolio-accent text-xs font-mono">
             <FolderGit2 class="w-3.5 h-3.5" />
             <span>Sản phẩm thực tế & Đồ án học phần</span>
           </div>
 
           <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
-            Dự Án <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-400 to-[#efab72]">Tiêu Biểu</span>
+            Dự Án <span class="text-portfolio-accent">Tiêu Biểu</span>
           </h2>
 
-          <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+          <p class="text-portfolio-muted text-sm sm:text-base leading-relaxed">
             Các sản phẩm tôi đã tâm huyết nghiên cứu, thiết kế và lập trình trong quá trình học tập tại trường Đại học.
           </p>
         </div>
 
-        <SlantedBanner copy="Selected Works" variant="orange" rotation="-5deg" size="md" />
+        <SlantedBanner copy="Selected Works" variant="red" rotation="-5deg" size="md" />
       </div>
 
       <!-- Projects Grid (Preview Cards with Signature Pocket Notch Button) -->
@@ -140,7 +137,7 @@ const closeModal = () => {
           v-for="item in projects"
           :key="item.id"
           @click="openProject(item)"
-          class="project-card group rounded-3xl p-6 sm:p-7 bg-[#111320] hover:bg-[#141728] border border-white/5 hover:border-[#efab72]/40 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-[#efab72]/5 flex flex-col justify-between cursor-pointer relative"
+          class="project-card group rounded-3xl p-6 sm:p-7 bg-[#111113] hover:bg-[#171719] border border-white/5 hover:border-portfolio-glow/40 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-portfolio-glow/5 flex flex-col justify-between cursor-pointer relative"
         >
           <div class="space-y-5">
             
@@ -169,16 +166,16 @@ const closeModal = () => {
               <!-- Corner Pocket with Notch & Circular Arrow Button -->
               <div class="pocket-container absolute bottom-0 right-0 z-20">
                 <!-- Notch curves surrounding pocket -->
-                <div class="pocket-notch-left absolute bottom-0 right-[46px] text-[#111320] group-hover:text-[#141728] transition-colors">
+                <div class="pocket-notch-left absolute bottom-0 right-[46px] text-[#111113] group-hover:text-[#171719] transition-colors">
                   <Notch size="14px" />
                 </div>
-                <div class="pocket-notch-top absolute bottom-[46px] right-0 text-[#111320] group-hover:text-[#141728] transition-colors">
+                <div class="pocket-notch-top absolute bottom-[46px] right-0 text-[#111113] group-hover:text-[#171719] transition-colors">
                   <Notch size="14px" />
                 </div>
 
                 <!-- Pocket corner base -->
-                <div class="pocket-base bg-[#111320] group-hover:bg-[#141728] pl-2.5 pt-2.5 rounded-tl-2xl transition-colors">
-                  <div class="w-10 h-10 rounded-full bg-[#efab72] text-[#1a1109] flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                <div class="pocket-base bg-[#111113] group-hover:bg-[#171719] pl-2.5 pt-2.5 rounded-tl-2xl transition-colors">
+                  <div class="w-10 h-10 rounded-full bg-portfolio-glow text-portfolio-base flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
                     <ArrowUpRight :size="18" class="group-hover:rotate-45 transition-transform duration-200" />
                   </div>
                 </div>
@@ -188,17 +185,17 @@ const closeModal = () => {
 
             <!-- Description -->
             <div class="space-y-2 text-left pt-1">
-              <h3 class="text-xl font-bold text-white group-hover:text-[#efab72] transition-colors">
+              <h3 class="text-xl font-bold text-white group-hover:text-portfolio-accent transition-colors">
                 {{ item.title }}
               </h3>
-              <p class="text-xs sm:text-sm text-slate-400 leading-relaxed line-clamp-2">
+              <p class="text-xs sm:text-sm text-portfolio-muted leading-relaxed line-clamp-2">
                 {{ item.summary }}
               </p>
             </div>
 
             <!-- Key Metric snippet -->
-            <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-2.5 text-xs text-slate-300">
-              <Sparkles class="w-4 h-4 text-[#efab72] shrink-0" />
+            <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-2.5 text-xs text-portfolio-muted">
+              <Sparkles class="w-4 h-4 text-portfolio-accent shrink-0" />
               <span class="line-clamp-1">{{ item.results[0] }}</span>
             </div>
 
@@ -210,16 +207,16 @@ const closeModal = () => {
               <span
                 v-for="tag in item.tags.slice(0, 3)"
                 :key="tag"
-                class="px-2.5 py-1 rounded-md text-[10px] font-mono bg-white/5 text-slate-400 border border-white/5"
+                class="px-2.5 py-1 rounded-md text-[10px] font-mono bg-white/5 text-portfolio-muted border border-white/5"
               >
                 {{ tag }}
               </span>
-              <span v-if="item.tags.length > 3" class="text-[10px] text-slate-500 font-mono self-center">
+              <span v-if="item.tags.length > 3" class="text-[10px] text-portfolio-subtle font-mono self-center">
                 +{{ item.tags.length - 3 }}
               </span>
             </div>
 
-            <span class="text-xs font-semibold text-[#efab72] group-hover:underline flex items-center gap-1">
+            <span class="text-xs font-semibold text-portfolio-accent group-hover:underline flex items-center gap-1">
               Xem Case Study &rarr;
             </span>
           </div>
@@ -232,7 +229,7 @@ const closeModal = () => {
 
     <!-- Bottom Notch Section Transition -->
     <div class="absolute bottom-0 left-0 right-0">
-      <NotchSection color="#242733" size="32px" :inverted="true" />
+      <NotchSection color="var(--color-portfolio-section)" size="32px" :inverted="true" />
     </div>
 
     <!-- Case study detail modal -->

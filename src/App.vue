@@ -8,7 +8,6 @@ import SkillsEducationSection from './components/SkillsEducationSection.vue';
 import ProjectsSection from './components/ProjectsSection.vue';
 import ContactSection from './components/ContactSection.vue';
 import ThreeExperience from './components/ThreeExperience.vue';
-import ContactDeki from './components/ContactDeki.vue';
 
 let lenis: Lenis | null = null;
 let rafId: number | null = null;
@@ -43,7 +42,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="relative min-h-screen bg-[#808080] text-[#e2e4ed] selection:bg-indigo-500/30 selection:text-indigo-200">
+  <div class="relative min-h-screen bg-portfolio-base text-portfolio-ink selection:bg-portfolio-glow/30">
     <!-- Navbar Header -->
     <Navbar />
     <ThreeExperience />
@@ -57,13 +56,12 @@ onUnmounted(() => {
       <TimelineSection />
 
       <!-- Scene 3: Academic Excellence, GPA, Skills & Certifications -->
-      <SkillsEducationSection />
+      <SkillsEducationSection class="hidden target:block" />
 
       <!-- Scene 4: Featured University Case Studies & Projects -->
       <ProjectsSection />
 
       <!-- Scene 5: Contact, Social, CV Download & Direct Message Form -->
-      <ContactDeki />
       <ContactSection />
     </main>
   </div>

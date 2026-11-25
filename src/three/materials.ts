@@ -53,8 +53,8 @@ export function grid() {
 }
 
 /** Procedural wood uses world coordinates so the room floor needs no UV unwrap. */
-export function woodFloor() {
-  const material = new MeshStandardMaterial({ color: '#ffffff', roughness: 0.9, metalness: 0 });
+export function woodFloor(color: Color) {
+  const material = new MeshStandardMaterial({ color, roughness: 0.9, metalness: 0 });
   material.onBeforeCompile = shader => {
     shader.vertexShader = shader.vertexShader.replace('#include <common>',
       '#include <common>\nvarying vec3 vWoodPosition;');
@@ -75,8 +75,7 @@ export function woodFloor() {
         * smoothstep(0.009, 0.009 + aa.y, edge.y);
       float grain = sin(wood.y * 370.0 + 3.0 * sin(along * 5.0) + seed * 20.0);
       float fine = sin(wood.y * 850.0 + sin(along * 11.0));
-      vec3 timber = mix(vec3(0.36, 0.19, 0.085), vec3(0.65, 0.42, 0.22),
-        0.48 + seed * 0.24 + grain * 0.075 + fine * 0.025);
+      float timber = 0.87 + seed * 0.2 + grain * 0.075 + fine * 0.025;
       diffuseColor.rgb *= mix(timber * 0.48, timber, seam);
     `);
   };
@@ -85,8 +84,8 @@ export function woodFloor() {
 }
 
 /** Seamless plaster in world space, including walls without texture UVs. */
-export function grayWall() {
-  const material = new MeshStandardMaterial({ color: '#808080', roughness: 1, metalness: 0 });
+export function grayWall(color: Color) {
+  const material = new MeshStandardMaterial({ color, roughness: 1, metalness: 0 });
   material.onBeforeCompile = shader => {
     shader.vertexShader = shader.vertexShader.replace('#include <common>',
       '#include <common>\nvarying vec3 vWallPosition;');

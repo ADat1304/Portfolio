@@ -1,5 +1,5 @@
 import {
-  DirectionalLight, HemisphereLight, MeshStandardMaterial, PCFSoftShadowMap, Box3, Color, Group, Material, Mesh, MeshBasicMaterial, Object3D, OrthographicCamera,
+  AnimationMixer, CanvasTexture, DirectionalLight, HemisphereLight, MeshStandardMaterial, PCFSoftShadowMap, Box3, Color, Group, Material, Mesh, MeshBasicMaterial, Object3D, OrthographicCamera,
   PerspectiveCamera, PlaneGeometry, Raycaster, Scene, SkinnedMesh, Vector2, Vector3, WebGLRenderer,
   WebGLRenderTarget, SRGBColorSpace, NoToneMapping, ShaderMaterial,
 } from 'three';
@@ -14,7 +14,7 @@ import { precompile } from './compile';
 type Kind = 'workspace' | 'about' | 'contact';
 interface Stage {
   element: HTMLElement; kind: Kind; scene: Scene; camera: PerspectiveCamera; width: number;
-  animation?: WorkspaceAnimation; model: Group; height: number; distance: number; pointer: Vector2;
+  animation?: WorkspaceAnimation; mixer?: AnimationMixer; model: Group; height: number; distance: number; pointer: Vector2;
   screens?: WorkspaceScreens;
   origin: Vector3;
 }
@@ -27,6 +27,9 @@ export class Experience {
   private shadowLights: DirectionalLight[] = [];
   private holoMaterials: ShaderMaterial[] = [];
   private grids: ShaderMaterial[] = [];
+  private screenCanvas?: HTMLCanvasElement;
+  private screenTexture?: CanvasTexture;
+  private lastScreenPercent = -1;
   private target = new WebGLRenderTarget(512, 512);
   private composite = new Scene();
   private compositeCamera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -72,6 +75,7 @@ export class Experience {
       return;
     }
     const materialCache = new Map<Material, Material>();
+    const stage_mixers = new Map<Group, AnimationMixer>();
     for (const resource of Object.values(loaded)) resource.scene.traverse(object => {
       if (!(object instanceof Mesh)) return;
       const convert = (original: Material) => {
@@ -82,7 +86,7 @@ export class Experience {
           const isWall = matName.includes('wall') || objName.includes('wall');
           const isFloor = matName.includes('floor');
           const next = resource === loaded.workspace
-            ? isFloor ? woodFloor() : isWall ? grayWall() : new MeshStandardMaterial({ color, roughness: 0.85, metalness: 0 })
+            ? isFloor || objName.includes('plinth') ? woodFloor(color) : isWall ? grayWall(color) : new MeshStandardMaterial({ color, roughness: 0.85, metalness: 0, side: original.side })
             : clay(color, this.matcap);
           materialCache.set(original, next);
           this.materials.add(next);
@@ -98,12 +102,42 @@ export class Experience {
       const source = kind === 'workspace' ? loaded.workspace.scene : loaded.deki.scene;
       const model = cloneSkeleton(source) as Group;
       if (kind !== 'workspace') {
-        const charBounds = new Box3().setFromObject(model);
+        const armature = model.getObjectByName('Armature');
+        if (armature) armature.rotateZ(Math.PI);
+        if (loaded.deki.animations.length > 0) {
+          const mixer = new AnimationMixer(model);
+          mixer.clipAction(loaded.deki.animations[0]!).play();
+          mixer.update(0);
+          stage_mixers.set(model, mixer);
+        }
+        // Raw glTF POSITION accessors are already in character Y-up space (-0.024 .. 2.208).
+        const charBounds = new Box3();
+        model.traverse(obj => {
+          if (obj instanceof Mesh) {
+            obj.geometry.computeBoundingBox();
+            if (obj.geometry.boundingBox) charBounds.union(obj.geometry.boundingBox);
+          }
+        });
         const pedestal = cloneSkeleton(loaded.pedestal.scene) as Group;
-        pedestal.position.y = charBounds.min.y;
+        pedestal.position.y = charBounds.isEmpty() ? 0 : charBounds.min.y;
         model.add(pedestal);
       }
       let bounds = new Box3().setFromObject(model);
+      if (kind !== 'workspace') {
+        const trueBox = new Box3();
+        model.updateMatrixWorld(true);
+        model.traverse(obj => {
+          if (obj instanceof Mesh) {
+            obj.geometry.computeBoundingBox();
+            if (obj.geometry.boundingBox) {
+              const b = obj.geometry.boundingBox.clone();
+              if (!(obj instanceof SkinnedMesh)) b.applyMatrix4(obj.matrixWorld);
+              trueBox.union(b);
+            }
+          }
+        });
+        if (!trueBox.isEmpty()) bounds = trueBox;
+      }
       if (kind === 'workspace') {
         const deskBox = new Box3();
         model.traverse(obj => {
@@ -118,8 +152,13 @@ export class Experience {
       model.position.sub(center);
       if (kind === 'about') {
         const cache = new Map<Material, ShaderMaterial>();
+        const screenMaterial = this.getPedestalScreenMaterial();
         model.traverse(object => {
           if (!(object instanceof Mesh)) return;
+          if (object.name.includes('SM_Pedestal_Screen')) {
+            object.material = screenMaterial;
+            return;
+          }
           const convert = (original: Material) => {
             if (!cache.has(original)) {
               const color = 'color' in original ? original.color as Color : new Color('#d8b98e');
@@ -132,13 +171,19 @@ export class Experience {
           };
           object.material = Array.isArray(object.material) ? object.material.map(convert) : convert(object.material);
         });
+      } else if (kind === 'contact') {
+        const screenMaterial = this.getPedestalScreenMaterial();
+        model.traverse(object => {
+          if (object instanceof Mesh && object.name.includes('SM_Pedestal_Screen')) {
+            object.material = screenMaterial;
+          }
+        });
       }
       const scene = new Scene();
       scene.add(model);
       if (kind === 'workspace') {
-        // Soft fill keeps the reference palette bright under the overhead light.
-        scene.add(new HemisphereLight(0xfff5e6, 0xc8c2b8, 1.8));
-        const overhead = new DirectionalLight(0xfff4e4, 2.2);
+        scene.add(new HemisphereLight(0xf2efff, 0x827279, 0.95));
+        const overhead = new DirectionalLight(0xffefd9, 1.65);
         const span = Math.max(size.x, size.y, size.z);
         overhead.position.set(-span * 0.15, span * 2, span * 0.2);
         overhead.target.position.set(0, -size.y * 0.25, 0);
@@ -174,6 +219,9 @@ export class Experience {
       if (kind === 'workspace') {
         stage.screens = new WorkspaceScreens(model, Math.min(8, this.renderer.capabilities.getMaxAnisotropy()));
         stage.animation = new WorkspaceAnimation(model, loaded.workspace.animations, this.reduced.matches);
+        model.traverse(object => { if (object instanceof Mesh) object.frustumCulled = false; });
+      } else if (stage_mixers.has(model)) {
+        stage.mixer = stage_mixers.get(model);
         model.traverse(object => { if (object instanceof Mesh) object.frustumCulled = false; });
       }
       this.stages.push(stage);
@@ -234,6 +282,80 @@ export class Experience {
     this.stages.find(stage => stage.kind === 'workspace')?.animation?.play(clip);
   }
 
+  private getPedestalScreenMaterial() {
+    if (!this.screenTexture) {
+      this.screenCanvas = document.createElement('canvas');
+      this.screenCanvas.width = 512;
+      this.screenCanvas.height = 256;
+      this.screenTexture = new CanvasTexture(this.screenCanvas);
+      this.screenTexture.colorSpace = SRGBColorSpace;
+      this.drawPedestalScreen(0);
+    }
+    const mat = new MeshBasicMaterial({ map: this.screenTexture });
+    this.materials.add(mat);
+    return mat;
+  }
+
+  private drawPedestalScreen(percent: number) {
+    if (!this.screenCanvas || !this.screenTexture || this.lastScreenPercent === percent) return;
+    this.lastScreenPercent = percent;
+    const ctx = this.screenCanvas.getContext('2d')!;
+    const w = this.screenCanvas.width;
+    const h = this.screenCanvas.height;
+
+    const grad = ctx.createLinearGradient(0, 0, 0, h);
+    grad.addColorStop(0, '#071b29');
+    grad.addColorStop(1, '#040e17');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = 'rgba(103, 217, 235, 0.06)';
+    for (let y = 0; y < h; y += 6) ctx.fillRect(0, y, w, 2);
+
+    ctx.strokeStyle = 'rgba(103, 217, 235, 0.45)';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(10, 10, w - 20, h - 20);
+
+    const unlocked = Math.min(4, Math.floor(percent / 25));
+    ctx.font = '700 18px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = percent >= 100 ? '#4ade80' : percent > 0 ? '#7dd3fc' : '#efab72';
+    ctx.fillText(
+      percent >= 100 ? '● INFO UNLOCKED [4/4]' : percent > 0 ? `● SCANNING DATA [${unlocked}/4]` : '● CLAY STANDBY [0/4]',
+      w / 2,
+      44
+    );
+
+    const digits = `${String(percent).padStart(3, '0')}%`;
+    ctx.font = '800 104px "JetBrains Mono", monospace';
+    ctx.shadowColor = 'rgba(103, 217, 235, 0.75)';
+    ctx.shadowBlur = 18;
+    ctx.fillStyle = '#e6fcff';
+    ctx.fillText(digits, w / 2, 154);
+    ctx.shadowBlur = 0;
+
+    const barX = 42;
+    const barY = 192;
+    const totalW = w - 84;
+    const gap = 10;
+    const segW = (totalW - gap * 3) / 4;
+    const barH = 18;
+
+    for (let i = 0; i < 4; i++) {
+      const sx = barX + i * (segW + gap);
+      ctx.fillStyle = 'rgba(103, 217, 235, 0.16)';
+      ctx.fillRect(sx, barY, segW, barH);
+
+      const segRatio = Math.max(0, Math.min(1, (percent - i * 25) / 25));
+      if (segRatio > 0) {
+        ctx.fillStyle = segRatio >= 1 ? '#4ade80' : '#38bdf8';
+        ctx.fillRect(sx, barY, Math.round(segW * segRatio), barH);
+      }
+    }
+
+    this.screenTexture.needsUpdate = true;
+  }
+
   private resize() {
     this.renderer.setSize(document.documentElement.clientWidth, window.innerHeight, false);
   }
@@ -251,6 +373,7 @@ export class Experience {
     const holoRatio = story ? transition.hologram : 1;
     const nextPercent = Math.round(holoRatio * 100);
     if (scanProgress.percent !== nextPercent) scanProgress.percent = nextPercent;
+    this.drawPedestalScreen(nextPercent);
     for (const material of this.holoMaterials) {
       material.uniforms.uTime!.value = time;
       material.uniforms.uProgress!.value = holoRatio;
@@ -263,26 +386,28 @@ export class Experience {
       const rect = stage.element.getBoundingClientRect();
       if (rect.bottom <= 0 || rect.top >= innerHeight || rect.width === 0 || rect.height === 0) continue;
       stage.animation?.update(delta, this.reduced.matches);
+      if (!this.reduced.matches) stage.mixer?.update(delta);
       const { camera, model, kind } = stage;
       if (story && kind === 'workspace' && transition.room >= 1) continue;
       if (story && kind === 'about' && transition.portrait <= 0) continue;
       model.position.copy(stage.origin);
-      model.scale.setScalar(1);
+      model.scale.setScalar(kind === 'about' ? 0.9 : 1);
+      if (kind === 'about') model.position.multiplyScalar(0.9);
       camera.aspect = rect.width / rect.height;
       camera.updateProjectionMatrix();
       const fit = Math.max(1, 1 / camera.aspect);
       // A portrait viewport needs a gentler fit than 1 / aspect.
       const halfFov = Math.tan(camera.fov * Math.PI / 360);
       const distance = kind === 'about'
-        ? Math.max(stage.height / (2 * halfFov), stage.width / (2 * halfFov * camera.aspect)) * 1.04
+        ? Math.max(stage.height / (2 * halfFov), stage.width / (2 * halfFov * camera.aspect)) * 1.24
         : stage.distance * (kind === 'workspace' ? Math.sqrt(fit) : fit);
       const sectionProgress = Math.max(-1, Math.min(1, (innerHeight * 0.5 - rect.top - rect.height * 0.5) / innerHeight));
       const parallax = this.reduced.matches ? 0 : stage.pointer.x * 0.045 + sectionProgress * 0.12;
       // The greeting faces -X/+Z in glTF (confirmed from the shoulder bones).
       const angle = kind === 'about' ? Math.PI : kind === 'workspace' ? -Math.PI / 4 + (story ? transition.room * 0.32 : 0) : 2.92 + parallax;
-      const heightRatio = kind === 'about' ? 0 : kind === 'workspace' ? 0.16 : 0.15;
+      const heightRatio = kind === 'about' ? 0.17 : kind === 'workspace' ? 0.16 : 0.15;
       camera.position.set(Math.sin(angle) * distance, distance * heightRatio + (this.reduced.matches || kind !== 'contact' ? 0 : stage.pointer.y * 0.08), Math.cos(angle) * distance);
-      camera.lookAt(0, kind === 'workspace' ? -stage.height * 0.04 : 0, 0);
+      camera.lookAt(0, kind === 'workspace' ? -stage.height * 0.04 : kind === 'about' ? -stage.height * 0.02 : 0, 0);
       const bounce = this.pulse ? Math.max(0, 1 - (performance.now() - this.pulse) / 1100) : 0;
       model.rotation.y = this.reduced.matches || kind === 'about' ? 0 : Math.sin(time * 1.1) * (kind === 'contact' ? 0.04 : 0) + Math.sin(bounce * Math.PI * 4) * bounce * 0.10;
       if (story && kind === 'workspace') {
@@ -292,7 +417,7 @@ export class Experience {
         model.rotation.y += transition.room * 0.18;
       }
       if (story && kind === 'about') {
-        model.scale.setScalar(0.9 + transition.portrait * 0.1);
+        model.scale.setScalar(0.81 + transition.portrait * 0.09);
         // Scale around the centered model, rather than its exported origin.
         model.position.copy(stage.origin).multiplyScalar(model.scale.x);
         model.position.y -= (1 - transition.portrait) * stage.height * 0.08;
@@ -344,12 +469,15 @@ export class Experience {
     for (const cleanup of this.listeners) cleanup();
     for (const stage of this.stages) {
       stage.animation?.dispose();
+      stage.mixer?.stopAllAction();
+      stage.mixer?.uncacheRoot(stage.model);
       stage.screens?.dispose();
       this.disposeTree(stage.scene);
     }
     this.disposeTree(this.composite);
     for (const material of this.materials) material.dispose();
     for (const material of this.grids) material.dispose();
+    this.screenTexture?.dispose();
     this.matcap.dispose();
     for (const light of this.shadowLights) light.shadow.dispose();
     this.target.dispose();
